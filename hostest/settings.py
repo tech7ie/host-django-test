@@ -29,7 +29,7 @@ SECRET_KEY = 'django-insecure-)&@d7=jz(52ybznj_t%iu_d2tc&ad6lde_y21ff0&&65y5&x4z
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['smurfcat.life']
+ALLOWED_HOSTS = ['smurfcat.life', '127.0.0.1']
 
 
 # Application definition
@@ -44,6 +44,12 @@ INSTALLED_APPS = [
     'rest_framework',
     'hostapp'
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+    )
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
