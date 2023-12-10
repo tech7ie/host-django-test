@@ -3,54 +3,44 @@ from rest_framework import status
 from rest_framework.response import Response
 from .database import Database
 
-
-
 class DB:
+    def __init__(self):
+        self.__db = Database()
 
 
-    @staticmethod
-    async def selectIdByCode(code):
+    async def selectIdByCode(self, code):
         try:
-            db = Database()
-            await db.connect()
-            raw = await db.fetch("SELECT id FROM links WHERE code = $1", code)
+            await self.__db.connect()
+            raw = await self.__db.fetch("SELECT id FROM links WHERE code = $1", code)
             code_id = raw[0]['id']
-            await db.close()
+            await self.__db.close()
         except:
             code_id = None
         return code_id
 
 
-    @staticmethod
-    async def selectBoxes(code):
-        code_id = await DB.selectIdByCode(code)
+    async def selectBoxes(self, code):
+        code_id = await self.selectIdByCode(code)
         if code_id is None:
             return None
-
-        db = Database()
-        await db.connect()
-        raw = await db.fetch("SELECT link FROM box WHERE code_id = $1", code_id)
-        await db.close()
+        await self.__db.connect()
+        raw = await self.__db.fetch("SELECT link FROM box WHERE code_id = $1", code_id)
+        await self.__db.close()
         return raw
 
 
-    @staticmethod
-    async def createCode(code):
-        db = Database()
-        await db.connect()
-        await db.execute("INSERT INTO links (user_id, code) VALUES ($1, $2)", 1, code)
-        await db.close()
+    async def createCode(self, code):
+        await self.__db.connect()
+        await self.__db.execute("INSERT INTO links (user_id, code) VALUES ($1, $2)", 1, code)
+        await self.__db.close()
 
 
-    @staticmethod
-    async def addLink(link, code):
-        code_id = await DB.selectIdByCode(code)
+    async def addLink(self, link, code):
+        code_id = await self.selectIdByCode(code)
         if code_id is None or link is None:
             return None
-
-        db = Database()
-        await db.connect()
-        await db.execute("INSERT INTO box (link, code_id) VALUES ($1, $2)", link, code_id)
-        await db.close()
+        await self.__db.connect()
+        await self.__db.execute("INSERT INTO box (link, code_id) VALUES ($1, $2)", link, code_id)
+        await self.__db.close()
         return 201
         
