@@ -27,7 +27,7 @@ class POST:
 
 	@api_view(['POST'])
 	def newLink(request, code):
-		link = request.data['link']
+		link = request.data.get('link')
 		result = async_to_sync(DB.addLink)(link, code)
 		if result is None:
 			return Response("Code not found", status=status.HTTP_400_BAD_REQUEST)

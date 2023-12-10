@@ -45,7 +45,7 @@ class DB:
     @staticmethod
     async def addLink(link, code):
         code_id = await DB.selectIdByCode(code)
-        if code_id is None:
+        if code_id is None or link is None:
             return None
 
         db = Database()
