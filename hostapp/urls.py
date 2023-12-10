@@ -4,6 +4,6 @@ from .views import GET, POST
 
 urlpatterns = [
     path('links/<str:code>', GET.boxes, name='getBoxes'),
-    path('new', POST.newCode, name='newCode'),
-    path('add/<str:code>', POST.newLink, name='addLink')
+    path('create-code', POST.create_code, name='newCode'),
+    path('add-link', POST.add_link, name='addLink')
 ]

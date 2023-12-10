@@ -21,15 +21,16 @@ class GET:
 class POST:
 
 	@api_view(['POST'])
-	def newCode(request):
+	def create_code(request):
 		code = generateCode()
 		result = async_to_sync(db.createCode)(code)
 
 		return Response(status=status.HTTP_201_CREATED)
 
 	@api_view(['POST'])
-	def newLink(request, code):
+	def add_link(request):
 		link = request.data.get('link')
+		code = request.data.get('code')
 		result = async_to_sync(db.addLink)(link, code)
 		if result is None:
 			return Response("Code not found", status=status.HTTP_400_BAD_REQUEST)
