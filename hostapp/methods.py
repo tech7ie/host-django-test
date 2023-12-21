@@ -1,7 +1,5 @@
-from django.db import connection
-from rest_framework import status
-from rest_framework.response import Response
 from .database import Database
+
 
 class DB:
     def __init__(self):
@@ -44,3 +42,18 @@ class DB:
         await self.__db.close()
         return 201
         
+
+    async def checkUser(self, user_id):
+        await self.__db.connect()
+        user = await self.__db.fetch("SELECT id FROM users WHERE user_id = $1", user_id)
+        await self.__db.close()
+        return True# if user else False
+
+    async def createUser(self, user_info):
+        await self.__db.connect()
+        await self.__db.execute("""
+            INSERT INTO users (email, given_name, family_name, picture, locale, name, verified_email) 
+            VALUES ($1, $2, $3, $4, $5, $6, $7)
+        """, user_info['email'], user_info['given_name'], user_info['family_name'],
+                user_info['picture'], user_info['locale'], user_info['name'], user_info['verified_email'])
+        await self.__db.close()

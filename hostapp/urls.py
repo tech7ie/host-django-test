@@ -1,9 +1,8 @@
 from django.urls import path, include
-from .views import GET, POST
-
+from .views import BoxesView, CodeView, LinkView
 
 urlpatterns = [
-    path('links/<str:code>', GET.boxes, name='getBoxes'),
-    path('create-code', POST.create_code, name='newCode'),
-    path('add-link', POST.add_link, name='addLink')
+    path('links/<str:code>', BoxesView.as_view(), name='getBoxes'),
+    path('create-code', CodeView.as_view(), name='newCode'),
+    path('add-link', LinkView.as_view(), name='addLink')
 ]

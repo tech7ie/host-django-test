@@ -1,6 +1,7 @@
 import os
 import asyncpg
 
+
 class Database:
     def __init__(self):
         self.db_name = os.getenv('DB_NAME')
@@ -17,6 +18,7 @@ class Database:
             host=self.host,
             port=self.port
         )
+
 
     async def execute(self, query, *args):
         if self.conn is None:
