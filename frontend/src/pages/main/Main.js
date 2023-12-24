@@ -24,7 +24,9 @@ const MainPage = () => {
 
     if (authCode) {
       window.history.replaceState({}, document.title, "/");
-      getTokens(authCode);
+      getTokens(authCode).then(() => {
+        window.location.reload();
+      });
     }
   }, []);
 
