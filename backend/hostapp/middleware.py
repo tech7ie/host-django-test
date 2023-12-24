@@ -1,6 +1,5 @@
 from asgiref.sync import markcoroutinefunction
 from django.utils.decorators import async_only_middleware
-import requests
 import httpx
 from django.http import HttpResponse
 from .database import Database
@@ -17,26 +16,29 @@ class TokenValidationMiddleware:
 
     
     async def __call__(self, request):
-        access_token = request.COOKIES.get('access_token')
-        
+
+        if request.path.startswith('/api/links'):
+            return await self.get_response(request)
+
+        access_token = request.headers.get('Authorization')
         if access_token is None:
-            return HttpResponse('Токен не передан', status=401)
+            return HttpResponse('Токен не передан', status=403)
 
 
         async with httpx.AsyncClient() as client:
             res = await client.get(f'https://www.googleapis.com/oauth2/v2/userinfo?access_token={access_token}')
         
-        if res.status_code == 401:
-            return HttpResponse('Время жизни токена стекло', status=401)
+            if res.status_code == 401:
+                return HttpResponse('Время жизни токена стекло или он не был передан', status=401)
 
-        elif res.status_code == 200:
-            user_info = res.json()
-            request.user_info = user_info
-            user_exist = await self.__db.checkUser(user_info['id'])
-            if user_exist is False:
-                await self.__db.createUser(user_info)
-
-        response = await self.get_response(request)
+            elif res.status_code == 200:
+                user_info = res.json()
+                user = await self.__db.fetchUser(user_info['id'])
+                if not user:
+                    await self.__db.createUser(user_info)
+                    user = await self.__db.fetchUser(user_info['id'])
+                request.user_info = user[0]
+            response = await self.get_response(request)
         
         return response
 
