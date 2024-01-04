@@ -25,22 +25,38 @@ class TokenValidationMiddleware:
             return HttpResponse('Токен не передан', status=403)
 
 
-        async with httpx.AsyncClient() as client:
-            res = await client.get(f'https://www.googleapis.com/oauth2/v2/userinfo?access_token={access_token}')
+        # async with httpx.AsyncClient() as client:
+        #     res = await client.get(f'https://www.googleapis.com/oauth2/v2/userinfo?access_token={access_token}')
         
-            if res.status_code == 401:
-                return HttpResponse('Время жизни токена стекло или он не был передан', status=401)
+        #     if res.status_code == 401:
+        #         return HttpResponse('Время жизни токена стекло или он не был передан', status=401)
 
-            elif res.status_code == 200:
+        #     elif res.status_code == 200:
+        #         user_info = res.json()
+        #         user = await self.__db.fetchUser(user_info['id'])
+        #         if not user:
+        #             await self.__db.createUser(user_info)
+        #             user = await self.__db.fetchUser(user_info['id'])
+        #         request.user_info = user[0]
+        try:
+            async with httpx.AsyncClient() as client:
+                res = await client.get(f'https://www.googleapis.com/oauth2/v2/userinfo?access_token={access_token}')
+                res.raise_for_status()
+
                 user_info = res.json()
                 user = await self.__db.fetchUser(user_info['id'])
                 if not user:
                     await self.__db.createUser(user_info)
                     user = await self.__db.fetchUser(user_info['id'])
+
                 request.user_info = user[0]
-            response = await self.get_response(request)
+
+        except httpx.HTTPStatusError:
+            return HttpResponse('Время жизни токена стекло или он не был передан,а так же могли возникнуть иные проблемы', status=401)
+
+
         
-        return response
+        return await self.get_response(request)
 
 # import requests
 # from rest_framework.response import Response

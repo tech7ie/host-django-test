@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'adrf',
     'hostapp',
     'corsheaders'
 ]
@@ -60,8 +61,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'hostapp.middleware.TokenValidationMiddleware',
     'corsheaders.middleware.CorsMiddleware',
+    'hostapp.middleware.TokenValidationMiddleware',
 ]
 
 ROOT_URLCONF = 'hostest.urls'
